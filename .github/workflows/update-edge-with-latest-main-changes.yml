@@ -1,25 +1,31 @@
-# This is a basic workflow to help you get started with Actions
+name: Update Edge Branch
 
-name: CI
-
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: [ "main" ]
-  
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+    branches: [main]
+    
+permissions: 
+  contents: write
+
 jobs:
-  # This workflow contains a single job called "build"
-  update-edge-branch:
-    # The type of runner that the job will run on
+  update-edge:
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-      # Runs a single command using the runners shell
-      - name: Merge main branch into edge branch
-        run: git checkout edge && git merge main --no-edit
+      - name: Setup Git User
+        run: |
+          git config user.name "Felipe bot"
+          git config user.email "felipe@x.com"
+
+      - name: Update Edge Branch
+        run: |
+          git checkout main
+          git fetch origin
+          git checkout edge
+          git pull
+          git merge origin/main
+          git push origin edge
